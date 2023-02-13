@@ -19,3 +19,14 @@
 -Формат: id, логин
 
 В качестве БД должна быть использована MongoDB.
+
+## Endpoints
+
+
+- CHECK PING GET http://localhost:8080/
+
+
+- Registration page in browser GET http://localhost:8080/register
+
+
+- Authentication page GET in browser http://localhost:8080/login
