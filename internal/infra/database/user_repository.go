@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/test_crud/internal/domain"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
 	"strings"
 	"time"
 )
@@ -26,8 +26,6 @@ type user struct {
 type UserRepo interface {
 	Save(user domain.User) (domain.User, error)
 	FindByEmail(email string) (domain.User, error)
-	//FindByID(id int64) (domain.User, error)
-	//Delete(id int64) error
 	FindAll() ([]domain.User, error)
 }
 
@@ -49,7 +47,7 @@ func (u userRepo) Save(user domain.User) (domain.User, error) {
 	if err != nil {
 		return domain.User{}, err
 	}
-	log.Println(res.InsertedID)
+	domainUser.ID = res.InsertedID.(primitive.ObjectID).Hex()
 	return u.mapModelToDomain(domainUser), nil
 }
 
@@ -62,27 +60,6 @@ func (u userRepo) FindByEmail(email string) (domain.User, error) {
 	}
 	return u.mapModelToDomain(domainUser), nil
 }
-
-//func (u userRepo) FindByID(id string) (domain.User, error) {
-//	var domainUser user
-//
-//	err := u.coll.FindOne(context.Background(), bson.M{"_id": id})
-//	if err != nil {
-//		return domain.User{}, fmt.Errorf("user repository finde by id user: %w", err)
-//	}
-//	return u.mapModelToDomain(domainUser), nil
-//}
-//
-//func (u userRepo) Delete(id int64) error {
-//	err := u.coll.Find(db.Cond{
-//		"id":           id,
-//		"deleted_date": nil,
-//	}).Update(map[string]interface{}{"deleted_date": time.Now()})
-//	if err != nil {
-//		return fmt.Errorf("user repository delete user: %w", err)
-//	}
-//	return nil
-//}
 
 func (u userRepo) FindAll() ([]domain.User, error) {
 	var users []user

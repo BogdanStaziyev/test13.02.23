@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/test_crud/internal/app"
 	"github.com/test_crud/internal/infra/http/requests"
 	"github.com/test_crud/internal/infra/http/response"
+	"log"
 	"net/http"
 )
 
@@ -22,17 +22,20 @@ func NewRegisterHandler(a app.AuthService) RegisterHandler {
 func (r RegisterHandler) Register(ctx echo.Context) error {
 	var registerUser requests.RegisterAuth
 	if err := ctx.Bind(&registerUser); err != nil {
-		return response.ErrorResponse(ctx, http.StatusBadRequest, "Could not decode user data")
+		log.Printf("%s: %s", response.ErrorDecodeUser, err.Error())
+		return response.ErrorResponse(ctx, http.StatusBadRequest, response.ErrorDecodeUser)
 	}
 	if err := ctx.Validate(&registerUser); err != nil {
-		return response.ErrorResponse(ctx, http.StatusUnprocessableEntity, "Could not validate user data")
+		log.Printf("%s: %s", response.ErrorValidateUser, err.Error())
+		return response.ErrorResponse(ctx, http.StatusUnprocessableEntity, response.ErrorValidateUser)
 	}
 
 	userFromRegister := registerUser.RegisterToUser()
 
 	user, err := r.as.Register(userFromRegister)
 	if err != nil {
-		return response.ErrorResponse(ctx, http.StatusInternalServerError, fmt.Sprintf("Could not save new user: %s", err))
+		log.Printf("%s: %s", response.ErrorSaveUser, err.Error())
+		return response.ErrorResponse(ctx, http.StatusInternalServerError, response.ErrorSaveUser)
 	}
 	userResponse := user.DomainToResponse()
 	return response.Response(ctx, http.StatusCreated, userResponse)
@@ -41,14 +44,17 @@ func (r RegisterHandler) Register(ctx echo.Context) error {
 func (r RegisterHandler) Login(ctx echo.Context) error {
 	var authUser requests.LoginAuth
 	if err := ctx.Bind(&authUser); err != nil {
-		return response.ErrorResponse(ctx, http.StatusBadRequest, "Could not decode user data")
+		log.Printf("%s: %s", response.ErrorDecodeUser, err.Error())
+		return response.ErrorResponse(ctx, http.StatusBadRequest, response.ErrorDecodeUser)
 	}
 	if err := ctx.Validate(&authUser); err != nil {
-		return response.ErrorResponse(ctx, http.StatusUnprocessableEntity, "Could not validate user data")
+		log.Printf("%s: %s", response.ErrorValidateUser, err.Error())
+		return response.ErrorResponse(ctx, http.StatusUnprocessableEntity, response.ErrorValidateUser)
 	}
 	users, err := r.as.Login(authUser)
 	if err != nil {
-		return err
+		log.Printf("%s: %s", response.ErrorLoginUser, err.Error())
+		return response.ErrorResponse(ctx, http.StatusInternalServerError, response.ErrorLoginUser)
 	}
 	var usersResponse []response.UserResponse
 	for _, user := range users {

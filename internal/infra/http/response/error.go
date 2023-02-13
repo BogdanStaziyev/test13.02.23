@@ -18,16 +18,16 @@ func Response(c echo.Context, statusCode int, data interface{}) error {
 	return c.JSON(statusCode, data)
 }
 
-func MessageResponse(c echo.Context, statusCode int, message string) error {
-	return Response(c, statusCode, Data{
-		Code:    statusCode,
-		Message: message,
-	})
-}
-
 func ErrorResponse(c echo.Context, statusCode int, message string) error {
 	return Response(c, statusCode, Error{
 		Code:  statusCode,
 		Error: message,
 	})
 }
+
+const (
+	ErrorDecodeUser   = "Could not decode user data"
+	ErrorValidateUser = "Could not validate user data"
+	ErrorSaveUser     = "Could not save new user"
+	ErrorLoginUser    = "Could not login user invalid email or password"
+)

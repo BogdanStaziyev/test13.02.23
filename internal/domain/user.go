@@ -17,8 +17,7 @@ type User struct {
 
 func (u User) DomainToResponse() response.UserResponse {
 	return response.UserResponse{
-		ID:    u.ID,
-		Email: u.Email,
-		Name:  u.Name,
+		ID:   u.ID,
+		Name: u.Name,
 	}
 }
