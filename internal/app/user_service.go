@@ -69,5 +69,9 @@ func (u userService) FindByEmail(email string) (domain.User, error) {
 //}
 
 func (u userService) FindAll() ([]domain.User, error) {
-	return []domain.User{}, nil
+	users, err := u.userRepo.FindAll()
+	if err != nil {
+		return []domain.User{}, err
+	}
+	return users, nil
 }

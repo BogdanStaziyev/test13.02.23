@@ -19,6 +19,6 @@ func GetConfiguration() Configuration {
 	}
 
 	return Configuration{
-		MongoURL: os.Getenv("MONGOURL"),
+		MongoURL: os.Getenv("MONGO_URL"),
 	}
 }

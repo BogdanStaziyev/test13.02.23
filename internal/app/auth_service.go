@@ -6,7 +6,6 @@ import (
 	"github.com/test_crud/config"
 	"github.com/test_crud/internal/domain"
 	"github.com/test_crud/internal/infra/http/requests"
-	"github.com/upper/db/v4"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -45,7 +44,7 @@ func (a authService) Register(user domain.User) (domain.User, error) {
 func (a authService) Login(user requests.LoginAuth) ([]domain.User, error) {
 	u, err := a.userService.FindByEmail(user.Email)
 	if err != nil {
-		if errors.Is(err, db.ErrNoMoreRows) {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return []domain.User{}, fmt.Errorf("auth service error login, invalid credentials user not exist: %w", err)
 		}
 		return []domain.User{}, fmt.Errorf("auth service error login user invalid email or password: %w", err)
@@ -56,7 +55,7 @@ func (a authService) Login(user requests.LoginAuth) ([]domain.User, error) {
 	}
 	users, err := a.userService.FindAll()
 	if err != nil {
-		if errors.Is(err, db.ErrNoMoreRows) {
+		if errors.Is(err, mongo.ErrNilDocument) {
 			//todo change error
 			return []domain.User{}, fmt.Errorf("auth service error login, invalid credentials: %w", err)
 		}

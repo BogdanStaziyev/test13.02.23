@@ -28,6 +28,7 @@ type UserRepo interface {
 	FindByEmail(email string) (domain.User, error)
 	//FindByID(id int64) (domain.User, error)
 	//Delete(id int64) error
+	FindAll() ([]domain.User, error)
 }
 
 type userRepo struct {
@@ -55,11 +56,7 @@ func (u userRepo) Save(user domain.User) (domain.User, error) {
 func (u userRepo) FindByEmail(email string) (domain.User, error) {
 	var domainUser user
 	email = strings.ToLower(email)
-	res := u.coll.FindOne(context.Background(), bson.M{"email": email})
-	if res.Err() != nil {
-		return domain.User{}, fmt.Errorf("user repository save user: %w", res.Err())
-	}
-	err := res.Decode(&domainUser)
+	err := u.coll.FindOne(context.Background(), bson.M{"email": email}).Decode(&domainUser)
 	if err != nil {
 		return domain.User{}, fmt.Errorf("user repository save user: %w", err)
 	}
@@ -87,6 +84,23 @@ func (u userRepo) FindByEmail(email string) (domain.User, error) {
 //	return nil
 //}
 
+func (u userRepo) FindAll() ([]domain.User, error) {
+	var users []user
+	find, err := u.coll.Find(context.Background(), bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	for find.Next(context.Background()) {
+		var us user
+		err = find.Decode(&us)
+		if err != nil {
+			return []domain.User{}, err
+		}
+		users = append(users, us)
+	}
+	return u.mapUsersCollection(users), nil
+}
+
 func (u userRepo) mapDomainToModel(d domain.User) user {
 	return user{
 		ID:       d.ID,
@@ -106,4 +120,13 @@ func (u userRepo) mapModelToDomain(d user) domain.User {
 		UpdatedDate: d.UpdatedDate,
 		DeletedDate: d.DeletedDate,
 	}
+}
+
+func (u userRepo) mapUsersCollection(users []user) []domain.User {
+	var result []domain.User
+	for _, coll := range users {
+		newUser := u.mapModelToDomain(coll)
+		result = append(result, newUser)
+	}
+	return result
 }

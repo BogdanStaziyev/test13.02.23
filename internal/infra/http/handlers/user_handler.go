@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/test_crud/internal/app"
-	"github.com/test_crud/internal/domain"
 	"github.com/test_crud/internal/infra/http/requests"
 	"github.com/test_crud/internal/infra/http/response"
 	"net/http"
@@ -35,7 +34,7 @@ func (r RegisterHandler) Register(ctx echo.Context) error {
 	if err != nil {
 		return response.ErrorResponse(ctx, http.StatusInternalServerError, fmt.Sprintf("Could not save new user: %s", err))
 	}
-	userResponse := domain.User.DomainToResponse(user)
+	userResponse := user.DomainToResponse()
 	return response.Response(ctx, http.StatusCreated, userResponse)
 }
 
@@ -47,5 +46,14 @@ func (r RegisterHandler) Login(ctx echo.Context) error {
 	if err := ctx.Validate(&authUser); err != nil {
 		return response.ErrorResponse(ctx, http.StatusUnprocessableEntity, "Could not validate user data")
 	}
-	return response.Response(ctx, http.StatusOK, "ok")
+	users, err := r.as.Login(authUser)
+	if err != nil {
+		return err
+	}
+	var usersResponse []response.UserResponse
+	for _, user := range users {
+		resp := user.DomainToResponse()
+		usersResponse = append(usersResponse, resp)
+	}
+	return response.Response(ctx, http.StatusOK, usersResponse)
 }
