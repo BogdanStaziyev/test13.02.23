@@ -3,63 +3,32 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/test_crud/internal/app"
-	"github.com/test_crud/internal/infra/http/requests"
 	"github.com/test_crud/internal/infra/http/response"
-	"log"
+	"html/template"
 	"net/http"
 )
 
-type RegisterHandler struct {
-	as app.AuthService
+type UserHandler struct {
+	us app.UserService
 }
 
-func NewRegisterHandler(a app.AuthService) RegisterHandler {
-	return RegisterHandler{
-		as: a,
+func NewUserHandler(a app.UserService) UserHandler {
+	return UserHandler{
+		us: a,
 	}
 }
 
-func (r RegisterHandler) Register(ctx echo.Context) error {
-	var registerUser requests.RegisterAuth
-	if err := ctx.Bind(&registerUser); err != nil {
-		log.Printf("%s: %s", response.ErrorDecodeUser, err.Error())
-		return response.ErrorResponse(ctx, http.StatusBadRequest, response.ErrorDecodeUser)
-	}
-	if err := ctx.Validate(&registerUser); err != nil {
-		log.Printf("%s: %s", response.ErrorValidateUser, err.Error())
-		return response.ErrorResponse(ctx, http.StatusUnprocessableEntity, response.ErrorValidateUser)
-	}
-
-	userFromRegister := registerUser.RegisterToUser()
-
-	user, err := r.as.Register(userFromRegister)
+func (r UserHandler) GetUsers(ctx echo.Context) error {
+	users, err := r.us.FindAll()
 	if err != nil {
-		log.Printf("%s: %s", response.ErrorSaveUser, err.Error())
-		return response.ErrorResponse(ctx, http.StatusInternalServerError, response.ErrorSaveUser)
-	}
-	userResponse := user.DomainToResponse()
-	return response.Response(ctx, http.StatusCreated, userResponse)
-}
-
-func (r RegisterHandler) Login(ctx echo.Context) error {
-	var authUser requests.LoginAuth
-	if err := ctx.Bind(&authUser); err != nil {
-		log.Printf("%s: %s", response.ErrorDecodeUser, err.Error())
-		return response.ErrorResponse(ctx, http.StatusBadRequest, response.ErrorDecodeUser)
-	}
-	if err := ctx.Validate(&authUser); err != nil {
-		log.Printf("%s: %s", response.ErrorValidateUser, err.Error())
-		return response.ErrorResponse(ctx, http.StatusUnprocessableEntity, response.ErrorValidateUser)
-	}
-	users, err := r.as.Login(authUser)
-	if err != nil {
-		log.Printf("%s: %s", response.ErrorLoginUser, err.Error())
-		return response.ErrorResponse(ctx, http.StatusInternalServerError, response.ErrorLoginUser)
+		return err
 	}
 	var usersResponse []response.UserResponse
 	for _, user := range users {
 		resp := user.DomainToResponse()
 		usersResponse = append(usersResponse, resp)
 	}
+	t, _ := template.ParseFiles("temp/users.html", "temp/footer.html", "temp/header.html")
+	t.ExecuteTemplate(ctx.Response(), "users", nil)
 	return response.Response(ctx, http.StatusOK, usersResponse)
 }

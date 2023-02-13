@@ -8,7 +8,8 @@ import (
 )
 
 type Configuration struct {
-	MongoURL string
+	MongoURL    string
+	RedirectUrl string
 }
 
 func GetConfiguration() Configuration {
@@ -19,6 +20,7 @@ func GetConfiguration() Configuration {
 	}
 
 	return Configuration{
-		MongoURL: os.Getenv("MONGO_URL"),
+		MongoURL:    os.Getenv("MONGO_URL"),
+		RedirectUrl: os.Getenv("REDIRECT_URL"),
 	}
 }

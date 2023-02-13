@@ -24,7 +24,8 @@ type Services struct {
 }
 
 type Handlers struct {
-	handlers.RegisterHandler
+	handlers.AuthHandler
+	handlers.UserHandler
 }
 
 type Middleware struct {
@@ -37,7 +38,8 @@ func New(conf config.Configuration) Container {
 	passwordGenerator := app.NewGeneratePasswordHash(bcrypt.DefaultCost)
 	userService := app.NewUserService(userRepository, passwordGenerator)
 	authService := app.NewAuthService(userService, conf)
-	registerController := handlers.NewRegisterHandler(authService)
+	authController := handlers.NewAuthHandler(authService)
+	userController := handlers.NewUserHandler(userService)
 
 	return Container{
 		Services: Services{
@@ -45,7 +47,8 @@ func New(conf config.Configuration) Container {
 			authService,
 		},
 		Handlers: Handlers{
-			registerController,
+			authController,
+			userController,
 		},
 		Middleware: Middleware{},
 	}

@@ -28,6 +28,6 @@ func ErrorResponse(c echo.Context, statusCode int, message string) error {
 const (
 	ErrorDecodeUser   = "Could not decode user data"
 	ErrorValidateUser = "Could not validate user data"
-	ErrorSaveUser     = "Could not save new user"
+	ErrorSaveUser     = "Could not save, user already exist"
 	ErrorLoginUser    = "Could not login user invalid email or password"
 )
