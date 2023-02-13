@@ -12,6 +12,7 @@ type Configuration struct {
 }
 
 func GetConfiguration() Configuration {
+
 	err := godotenv.Load(filepath.Join(".env"))
 	if err != nil {
 		log.Println(err)
