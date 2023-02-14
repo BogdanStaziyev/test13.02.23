@@ -18,4 +18,4 @@
 go.work
 
 .idea
-.env
+#.env
