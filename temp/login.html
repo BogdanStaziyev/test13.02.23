@@ -6,8 +6,8 @@
     <h1>Логин</h1>
     <main class="px-3">
         <form action="/user/login" method="post">
-            <input type="password" name="password" id="password" class="form-control" placeholder="Пароль"></textarea><br>
-            <input type="email" name="email" id="email" class="form-control" placeholder="Email"></textarea><br>
+            <input type="password" name="password" id="password" required="" minlength="8" class="form-control" placeholder="Пароль"></textarea><br>
+            <input type="email" name="email" id="email" required="" class="form-control" placeholder="Email"></textarea><br>
             <button class="btn btn-warning">Добавить</button>
 
         </form>
