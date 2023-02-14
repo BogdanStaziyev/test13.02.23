@@ -13,6 +13,6 @@ func NewServer() *Server {
 	return s
 }
 
-func (s Server) Start() error {
-	return s.Echo.Start(":8080")
+func (s Server) Start(host string, port string) error {
+	return s.Echo.Start(host + ":" + port)
 }

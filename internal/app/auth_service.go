@@ -38,7 +38,7 @@ func NewAuthService(us UserService, cf config.Configuration) AuthService {
 func (a authService) Register(user domain.User) (domain.User, error) {
 	_, err := a.userService.FindByEmail(user.Email)
 	if err == nil {
-		return domain.User{}, fmt.Errorf("%s: %w", ErrorRegisterUserExist, err)
+		return domain.User{}, fmt.Errorf("%s", ErrorRegisterUserExist)
 	} else if !errors.Is(err, mongo.ErrNoDocuments) {
 		return domain.User{}, fmt.Errorf("%s: %w", RegisterError, err)
 	}

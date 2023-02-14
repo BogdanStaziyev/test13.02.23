@@ -11,7 +11,12 @@ import (
 	"time"
 )
 
-const UsersTable = "users"
+const (
+	UsersTable       = "users"
+	ErrorSave        = "user repository save user"
+	ErrorFindByEmail = "user repository find by email user"
+	ErrorFindAll     = "user repository find all users"
+)
 
 type user struct {
 	ID          string     `bson:"_id,omitempty"`
@@ -45,7 +50,7 @@ func (u userRepo) Save(user domain.User) (domain.User, error) {
 	domainUser.UpdatedDate = time.Now()
 	res, err := u.coll.InsertOne(context.Background(), &domainUser)
 	if err != nil {
-		return domain.User{}, err
+		return domain.User{}, fmt.Errorf("%s: %w", ErrorSave, err)
 	}
 	domainUser.ID = res.InsertedID.(primitive.ObjectID).Hex()
 	return u.mapModelToDomain(domainUser), nil
@@ -56,7 +61,7 @@ func (u userRepo) FindByEmail(email string) (domain.User, error) {
 	email = strings.ToLower(email)
 	err := u.coll.FindOne(context.Background(), bson.M{"email": email}).Decode(&domainUser)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("user repository save user: %w", err)
+		return domain.User{}, fmt.Errorf("%s: %w", ErrorFindByEmail, err)
 	}
 	return u.mapModelToDomain(domainUser), nil
 }
@@ -65,13 +70,13 @@ func (u userRepo) FindAll() ([]domain.User, error) {
 	var users []user
 	find, err := u.coll.Find(context.Background(), bson.D{})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", ErrorFindAll, err)
 	}
 	for find.Next(context.Background()) {
 		var us user
 		err = find.Decode(&us)
 		if err != nil {
-			return []domain.User{}, err
+			return []domain.User{}, fmt.Errorf("%s: %w", ErrorFindAll, err)
 		}
 		users = append(users, us)
 	}

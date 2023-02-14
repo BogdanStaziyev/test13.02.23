@@ -10,6 +10,8 @@ import (
 type Configuration struct {
 	MongoURL    string
 	RedirectUrl string
+	Port        string
+	Host        string
 }
 
 func GetConfiguration() Configuration {
@@ -22,5 +24,7 @@ func GetConfiguration() Configuration {
 	return Configuration{
 		MongoURL:    os.Getenv("MONGO_URL"),
 		RedirectUrl: os.Getenv("REDIRECT_URL"),
+		Port:        os.Getenv("PORT"),
+		Host:        os.Getenv("HOST"),
 	}
 }
