@@ -60,7 +60,7 @@ func getDb(conf config.Configuration) *mongo.Database {
 	if err != nil {
 		log.Println(err)
 	}
-	coll := client.Database("testProject")
+	coll := client.Database(conf.DbName)
 	if err = client.Ping(ctx, nil); err != nil {
 		log.Fatalf("Could not connect to mongo db %s", err)
 	}

@@ -12,6 +12,7 @@ type Configuration struct {
 	RedirectUrl string
 	Port        string
 	Host        string
+	DbName      string
 }
 
 func GetConfiguration() Configuration {
@@ -26,5 +27,6 @@ func GetConfiguration() Configuration {
 		RedirectUrl: os.Getenv("REDIRECT_URL"),
 		Port:        os.Getenv("PORT"),
 		Host:        os.Getenv("HOST"),
+		DbName:      os.Getenv("DB_NAME"),
 	}
 }

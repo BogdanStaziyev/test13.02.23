@@ -44,7 +44,7 @@ func (r AuthHandler) Register(ctx echo.Context) error {
 	}
 	userResponse := user.DomainToResponse()
 	t, _ := template.ParseFiles("temp/result.html", "temp/footer.html", "temp/header.html")
-	t.ExecuteTemplate(ctx.Response(), "result", nil)
+	_ = t.ExecuteTemplate(ctx.Response(), "result", nil)
 	return response.Response(ctx, http.StatusCreated, userResponse)
 }
 

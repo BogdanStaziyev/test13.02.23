@@ -4,7 +4,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/test_crud/config/container"
 	"github.com/test_crud/internal/infra/http/validators"
-	"html/template"
 )
 
 func EchoRouter(e *echo.Echo, cont container.Container) {
@@ -21,22 +20,4 @@ func EchoRouter(e *echo.Echo, cont container.Container) {
 
 	v1 := e.Group("/")
 	v1.GET("", PingHandler)
-}
-
-func register(ctx echo.Context) error {
-	t, _ := template.ParseFiles("temp/register.html", "temp/footer.html", "temp/header.html")
-	err := t.ExecuteTemplate(ctx.Response(), "main", nil)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func login(ctx echo.Context) error {
-	t, _ := template.ParseFiles("temp/login.html", "temp/footer.html", "temp/header.html")
-	err := t.ExecuteTemplate(ctx.Response(), "main", nil)
-	if err != nil {
-		return err
-	}
-	return nil
 }

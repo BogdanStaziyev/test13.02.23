@@ -59,7 +59,7 @@ func (a authService) Login(user requests.LoginAuth) error {
 	}
 	valid := a.checkPasswordHash(user.Password, u.Password)
 	if !valid {
-		return fmt.Errorf("%s: %w", ErrorLoginInvalid, err)
+		return fmt.Errorf("%s", ErrorLoginInvalid)
 	}
 	return nil
 }

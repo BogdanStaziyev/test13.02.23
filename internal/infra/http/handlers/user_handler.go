@@ -29,6 +29,6 @@ func (r UserHandler) GetUsers(ctx echo.Context) error {
 		usersResponse = append(usersResponse, resp)
 	}
 	t, _ := template.ParseFiles("temp/users.html", "temp/footer.html", "temp/header.html")
-	t.ExecuteTemplate(ctx.Response(), "users", nil)
+	_ = t.ExecuteTemplate(ctx.Response(), "users", nil)
 	return response.Response(ctx, http.StatusOK, usersResponse)
 }
