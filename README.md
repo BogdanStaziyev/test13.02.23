@@ -1,8 +1,6 @@
 # To test the application
 
-### I added ENV file so that you don't have to do anything else
-
-- #### RUN main go file
+- #### RUN docker compose file
 
 
 - #### USE endpoints in browser or postman collection
