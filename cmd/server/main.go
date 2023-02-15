@@ -17,7 +17,7 @@ func main() {
 
 	http.EchoRouter(srv.Echo, cont)
 
-	err := srv.Start(conf.Host, conf.Port)
+	err := srv.Start(conf.Port)
 	if err != nil {
 		log.Fatal("Port already used")
 	}
