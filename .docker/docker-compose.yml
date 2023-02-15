@@ -18,10 +18,6 @@ services:
       - 27017:27017
     volumes:
       - 'mongo-data:/data/db'
-    healthcheck:
-      test: mongosh --eval 'db.runCommand("ping").ok'
-      interval: 2s
-      timeout: 30s
     environment:
       - MONGO_INITDB_ROOT_USERNAME=user
       - MONGO_INITDB_ROOT_PASSWORD=password
