@@ -1,7 +1,5 @@
 # To test the application
 
-### I added ENV file so that you don't have to do anything else
-
 - #### RUN docker compose file
 
 
