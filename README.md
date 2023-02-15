@@ -1,6 +1,6 @@
 # To test the application
 
-### I added ENV file so that you don't have to do anything else (MongoDB user will be deleted in a week)
+### I added ENV file so that you don't have to do anything else
 
 - #### RUN main go file
 
