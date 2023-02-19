@@ -9,8 +9,6 @@ RUN go mod download
 
 COPY . .
 
-COPY .env ../.env
-
 COPY temp ../temp
 
 RUN go build -o ../test_app cmd/server/main.go

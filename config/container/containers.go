@@ -15,7 +15,6 @@ import (
 type Container struct {
 	Services
 	Handlers
-	Middleware
 }
 
 type Services struct {
@@ -26,9 +25,6 @@ type Services struct {
 type Handlers struct {
 	handlers.AuthHandler
 	handlers.UserHandler
-}
-
-type Middleware struct {
 }
 
 func New(conf config.Configuration) Container {
@@ -50,7 +46,6 @@ func New(conf config.Configuration) Container {
 			authController,
 			userController,
 		},
-		Middleware: Middleware{},
 	}
 }
 

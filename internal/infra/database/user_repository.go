@@ -19,13 +19,12 @@ const (
 )
 
 type user struct {
-	ID          string     `bson:"_id,omitempty"`
-	Email       string     `bson:"email"`
-	Name        string     `bson:"name"`
-	Password    string     `bson:"password,omitempty"`
-	CreatedDate time.Time  `bson:"created_date,omitempty"`
-	UpdatedDate time.Time  `bson:"updated_date"`
-	DeletedDate *time.Time `bson:"deleted_date,omitempty"`
+	ID          string    `bson:"_id,omitempty"`
+	Email       string    `bson:"email"`
+	Name        string    `bson:"name"`
+	Password    string    `bson:"password,omitempty"`
+	CreatedDate time.Time `bson:"created_date,omitempty"`
+	UpdatedDate time.Time `bson:"updated_date"`
 }
 
 type UserRepo interface {
@@ -100,7 +99,6 @@ func (u userRepo) mapModelToDomain(d user) domain.User {
 		Name:        d.Name,
 		CreatedDate: d.CreatedDate,
 		UpdatedDate: d.UpdatedDate,
-		DeletedDate: d.DeletedDate,
 	}
 }
 

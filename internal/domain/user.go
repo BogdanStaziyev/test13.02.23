@@ -12,7 +12,6 @@ type User struct {
 	Password    string
 	CreatedDate time.Time
 	UpdatedDate time.Time
-	DeletedDate *time.Time
 }
 
 func (u User) DomainToResponse() response.UserResponse {

@@ -26,10 +26,6 @@ func (r AuthHandler) Register(ctx echo.Context) error {
 	registerUser.Name = ctx.FormValue("name")
 	registerUser.Email = ctx.FormValue("email")
 	registerUser.Password = ctx.FormValue("password")
-	if err := ctx.Bind(&registerUser); err != nil {
-		log.Printf("%s: %s", response.ErrorDecodeUser, err.Error())
-		return response.ErrorResponse(ctx, http.StatusBadRequest, response.ErrorDecodeUser)
-	}
 	if err := ctx.Validate(&registerUser); err != nil {
 		log.Printf("%s: %s", response.ErrorValidateUser, err.Error())
 		return response.ErrorResponse(ctx, http.StatusUnprocessableEntity, response.ErrorValidateUser)
@@ -52,10 +48,6 @@ func (r AuthHandler) Login(ctx echo.Context) error {
 	var authUser requests.LoginAuth
 	authUser.Email = ctx.FormValue("email")
 	authUser.Password = ctx.FormValue("password")
-	if err := ctx.Bind(&authUser); err != nil {
-		log.Printf("%s: %s", response.ErrorDecodeUser, err.Error())
-		return response.ErrorResponse(ctx, http.StatusBadRequest, response.ErrorDecodeUser)
-	}
 	if err := ctx.Validate(&authUser); err != nil {
 		log.Printf("%s: %s", response.ErrorValidateUser, err.Error())
 		return response.ErrorResponse(ctx, http.StatusUnprocessableEntity, response.ErrorValidateUser)

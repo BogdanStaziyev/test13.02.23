@@ -3,7 +3,7 @@
 - #### RUN docker compose file
 
 
-- #### USE endpoints in browser or postman collection
+- #### USE endpoints in browser
 
 
 ## Endpoints

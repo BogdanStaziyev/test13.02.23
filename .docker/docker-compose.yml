@@ -2,6 +2,12 @@ version: '3.9'
 services:
   app:
     container_name: test_app
+    environment:
+      - MONGO_URL=mongodb://user:password@mongodb:27017/?authSource=admin
+      - REDIRECT_URL=http://localhost:8080/user/get_users
+      - PORT=8080
+      - HOST=localhost
+      - DB_NAME=testProject
     build:
       context: ../
       dockerfile: .docker/Dockerfile
