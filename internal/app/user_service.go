@@ -14,7 +14,7 @@ const (
 )
 
 type UserService interface {
-	Save(user domain.User) (domain.User, error)
+	Save(user domain.User) error
 	FindByEmail(email string) (domain.User, error)
 	FindAll() ([]domain.User, error)
 }
@@ -31,18 +31,17 @@ func NewUserService(ur database.UserRepo, gs Generator) UserService {
 	}
 }
 
-func (u userService) Save(user domain.User) (domain.User, error) {
+func (u userService) Save(user domain.User) error {
 	var err error
 	user.Password, err = u.passwordGen.GeneratePasswordHash(user.Password)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("%s: %w", errorPasswordGenerate, err)
+		return fmt.Errorf("%s: %w", errorPasswordGenerate, err)
 	}
-
-	saveUser, err := u.userRepo.Save(user)
+	err = u.userRepo.Save(user)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("%s: %w", errorSaveUser, err)
+		return fmt.Errorf("%s: %w", errorSaveUser, err)
 	}
-	return saveUser, nil
+	return nil
 }
 
 func (u userService) FindByEmail(email string) (domain.User, error) {

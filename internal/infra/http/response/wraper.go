@@ -25,8 +25,14 @@ func ErrorResponse(c echo.Context, statusCode int, message string) error {
 	})
 }
 
+func MessageResponse(c echo.Context, statusCode int, message string) error {
+	return Response(c, statusCode, Data{
+		Code:    statusCode,
+		Message: message,
+	})
+}
+
 const (
-	ErrorDecodeUser   = "Could not decode user data"
 	ErrorValidateUser = "Could not validate user data"
 	ErrorSaveUser     = "Could not save, user already exist"
 	ErrorLoginUser    = "Could not login user invalid email or password"

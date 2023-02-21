@@ -33,15 +33,14 @@ func (r AuthHandler) Register(ctx echo.Context) error {
 
 	userFromRegister := registerUser.RegisterToUser()
 
-	user, err := r.as.Register(userFromRegister)
+	err := r.as.Register(userFromRegister)
 	if err != nil {
 		log.Printf("%s: %s", response.ErrorSaveUser, err.Error())
 		return response.ErrorResponse(ctx, http.StatusInternalServerError, response.ErrorSaveUser)
 	}
-	userResponse := user.DomainToResponse()
 	t, _ := template.ParseFiles("temp/result.html", "temp/footer.html", "temp/header.html")
 	_ = t.ExecuteTemplate(ctx.Response(), "result", nil)
-	return response.Response(ctx, http.StatusCreated, userResponse)
+	return response.MessageResponse(ctx, http.StatusCreated, "User successful created")
 }
 
 func (r AuthHandler) Login(ctx echo.Context) error {

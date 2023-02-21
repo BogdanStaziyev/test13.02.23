@@ -19,7 +19,7 @@ const (
 )
 
 type AuthService interface {
-	Register(user domain.User) (domain.User, error)
+	Register(user domain.User) error
 	Login(user requests.LoginAuth) error
 }
 
@@ -35,18 +35,18 @@ func NewAuthService(us UserService, cf config.Configuration) AuthService {
 	}
 }
 
-func (a authService) Register(user domain.User) (domain.User, error) {
+func (a authService) Register(user domain.User) error {
 	_, err := a.userService.FindByEmail(user.Email)
 	if err == nil {
-		return domain.User{}, fmt.Errorf("%s", ErrorRegisterUserExist)
+		return fmt.Errorf("%s", ErrorRegisterUserExist)
 	} else if !errors.Is(err, mongo.ErrNoDocuments) {
-		return domain.User{}, fmt.Errorf("%s: %w", RegisterError, err)
+		return fmt.Errorf("%s: %w", RegisterError, err)
 	}
-	user, err = a.userService.Save(user)
+	err = a.userService.Save(user)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("%s: %w", ErrorSave, err)
+		return fmt.Errorf("%s: %w", ErrorSave, err)
 	}
-	return user, nil
+	return nil
 }
 
 func (a authService) Login(user requests.LoginAuth) error {

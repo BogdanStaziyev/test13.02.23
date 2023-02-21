@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"strings"
 	"time"
 )
@@ -18,17 +19,19 @@ const (
 	ErrorFindAll     = "user repository find all users"
 )
 
-type user struct {
-	ID          string    `bson:"_id,omitempty"`
-	Email       string    `bson:"email"`
-	Name        string    `bson:"name"`
-	Password    string    `bson:"password,omitempty"`
-	CreatedDate time.Time `bson:"created_date,omitempty"`
-	UpdatedDate time.Time `bson:"updated_date"`
+var ctx = context.TODO()
+
+type userToDomain struct {
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Email       string             `bson:"email"`
+	Name        string             `bson:"name"`
+	Password    string             `bson:"password,omitempty"`
+	CreatedDate time.Time          `bson:"created_date,omitempty"`
+	UpdatedDate time.Time          `bson:"updated_date"`
 }
 
 type UserRepo interface {
-	Save(user domain.User) (domain.User, error)
+	Save(user domain.User) error
 	FindByEmail(email string) (domain.User, error)
 	FindAll() ([]domain.User, error)
 }
@@ -43,22 +46,21 @@ func NewUSerRepo(db mongo.Database) UserRepo {
 	}
 }
 
-func (u userRepo) Save(user domain.User) (domain.User, error) {
+func (u userRepo) Save(user domain.User) error {
 	domainUser := u.mapDomainToModel(user)
 	domainUser.CreatedDate = time.Now()
 	domainUser.UpdatedDate = time.Now()
-	res, err := u.coll.InsertOne(context.Background(), &domainUser)
+	_, err := u.coll.InsertOne(ctx, &domainUser)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("%s: %w", ErrorSave, err)
+		return fmt.Errorf("%s: %w", ErrorSave, err)
 	}
-	domainUser.ID = res.InsertedID.(primitive.ObjectID).Hex()
-	return u.mapModelToDomain(domainUser), nil
+	return nil
 }
 
 func (u userRepo) FindByEmail(email string) (domain.User, error) {
-	var domainUser user
+	var domainUser userToDomain
 	email = strings.ToLower(email)
-	err := u.coll.FindOne(context.Background(), bson.M{"email": email}).Decode(&domainUser)
+	err := u.coll.FindOne(ctx, bson.M{"email": email}).Decode(&domainUser)
 	if err != nil {
 		return domain.User{}, fmt.Errorf("%s: %w", ErrorFindByEmail, err)
 	}
@@ -66,34 +68,44 @@ func (u userRepo) FindByEmail(email string) (domain.User, error) {
 }
 
 func (u userRepo) FindAll() ([]domain.User, error) {
-	var users []user
-	find, err := u.coll.Find(context.Background(), bson.D{})
+	var users []userToDomain
+	find, err := u.coll.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", ErrorFindAll, err)
 	}
-	for find.Next(context.Background()) {
-		var us user
-		err = find.Decode(&us)
+	for find.Next(ctx) {
+		var user userToDomain
+		err = find.Decode(&user)
 		if err != nil {
 			return []domain.User{}, fmt.Errorf("%s: %w", ErrorFindAll, err)
 		}
-		users = append(users, us)
+		users = append(users, user)
+	}
+	err = find.Close(ctx)
+	if err != nil {
+		log.Println(err)
 	}
 	return u.mapUsersCollection(users), nil
 }
 
-func (u userRepo) mapDomainToModel(d domain.User) user {
-	return user{
-		ID:       d.ID,
+func (u userRepo) mapDomainToModel(d domain.User) userToDomain {
+	return userToDomain{
+		ID: func(s string) primitive.ObjectID {
+			id, err := primitive.ObjectIDFromHex(s)
+			if err != nil {
+				log.Println(err)
+			}
+			return id
+		}(d.ID),
 		Email:    strings.ToLower(d.Email),
 		Password: d.Password,
 		Name:     d.Name,
 	}
 }
 
-func (u userRepo) mapModelToDomain(d user) domain.User {
+func (u userRepo) mapModelToDomain(d userToDomain) domain.User {
 	return domain.User{
-		ID:          d.ID,
+		ID:          d.ID.Hex(),
 		Email:       d.Email,
 		Password:    d.Password,
 		Name:        d.Name,
@@ -102,7 +114,7 @@ func (u userRepo) mapModelToDomain(d user) domain.User {
 	}
 }
 
-func (u userRepo) mapUsersCollection(users []user) []domain.User {
+func (u userRepo) mapUsersCollection(users []userToDomain) []domain.User {
 	var result []domain.User
 	for _, coll := range users {
 		newUser := u.mapModelToDomain(coll)
